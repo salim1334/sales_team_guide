@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Alarm Sales Pro - Dashboard</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#211200",
+                        "surface": "#fbf9fa",
+                        "on-surface": "#1b1c1d",
+                        "secondary-fixed-dim": "#a1d494",
+                        "surface-container-low": "#f5f3f4",
+                        "surface-container-highest": "#e4e2e3",
+                        "inverse-surface": "#303032",
+                        "surface-bright": "#fbf9fa",
+                        "on-secondary-fixed-variant": "#23501e",
+                        "secondary": "#3b6934",
+                        "on-tertiary-container": "#a88c69",
+                        "tertiary-fixed": "#feddb5",
+                        "secondary-fixed": "#bcf0ae",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#d2e4fb",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dbd9db",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#b7c8de",
+                        "outline-variant": "#c4c6cd",
+                        "on-secondary-fixed": "#002201",
+                        "on-secondary-container": "#3f6d38",
+                        "secondary-container": "#b9eeab",
+                        "primary-container": "#1a2b3c",
+                        "on-background": "#1b1c1d",
+                        "primary": "#041627",
+                        "on-tertiary-fixed": "#281802",
+                        "on-primary-fixed": "#0b1d2d",
+                        "background": "#fbf9fa",
+                        "tertiary-container": "#38260b",
+                        "surface-variant": "#e4e2e3",
+                        "surface-container": "#efedef",
+                        "on-primary-container": "#8192a7",
+                        "error": "#ba1a1a",
+                        "surface-tint": "#4f6073",
+                        "on-surface-variant": "#44474c",
+                        "outline": "#74777d",
+                        "tertiary-fixed-dim": "#e1c29b",
+                        "on-primary-fixed-variant": "#38485a",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#b7c8de",
+                        "surface-container-high": "#e9e7e9",
+                        "inverse-on-surface": "#f2f0f2",
+                        "on-tertiary-fixed-variant": "#584326"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "2xl": "48px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "button": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "button": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-desktop h-16 w-full fixed top-0 z-50 bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed text-2xl">security</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Alarm Sales Pro</h1>
+</div>
+<div class="flex items-center">
+<img alt="Admin User Profile" class="h-8 w-8 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a mature businessman with short salt-and-pepper hair, wearing a dark navy blazer and white collared shirt. He is looking directly at the camera with a confident, approachable smile. The background is softly blurred in high-key white and light gray tones, creating a clean, modern corporate aesthetic. Lighting is even and flattering, emphasizing a trustworthy and competent demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPjJydNJxzBe8kOaHOYidBASq6cR54pw1hU1gvZLExLlm5bfh3SroNIhAA54YGFh_9X2tSg-PILE_-LcFp-eSHttYPGZqbPeUarGc1WbroH9stVnDeMLMQZezZpp4-WLWWuoHr3a9laJw1SZ0renahmcvpaY6OTaaGYyZXt0BlG7T_OksbslPvY0iU6LV0-6bJxEfYcU6WQ74dKC77cdBonrfk9lcC78cRhRCRo07OgtXu1IvrsZ79-2Dd1_5eJuPnPIm6_j_wKg"/>
+</div>
+</header>
+<!-- NavigationDrawer (Desktop) -->
+<nav class="hidden md:flex flex-col py-md w-64 h-[calc(100vh-4rem)] fixed left-0 top-16 z-40 bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline shadow-sm">
+<div class="px-lg mb-md">
+<h2 class="font-headline-sm text-headline-sm text-primary">Content Manager</h2>
+</div>
+<ul class="flex-1 space-y-sm">
+<li>
+<a class="bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full mx-2 px-4 py-3 flex items-center gap-3 font-label-md text-label-md cursor-pointer active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant mx-2 px-4 py-3 flex items-center gap-3 font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-full transition-all cursor-pointer active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined">description</span>
+                    Call Scripts
+                </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant mx-2 px-4 py-3 flex items-center gap-3 font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-full transition-all cursor-pointer active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined">ads_click</span>
+                    Ad Templates
+                </a>
+</li>
+<li>
+<a class="text-on-surface-variant dark:text-surface-variant mx-2 px-4 py-3 flex items-center gap-3 font-label-md text-label-md hover:bg-surface-container-highest dark:hover:bg-inverse-surface rounded-full transition-all cursor-pointer active:scale-95 duration-75" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- BottomNavBar (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 bg-surface dark:bg-inverse-surface md:hidden border-t border-outline-variant dark:border-outline shadow-lg">
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim bg-secondary-container/30 rounded-xl px-3 py-1 font-label-md text-label-md transition-transform duration-150 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
+            Home
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-3 py-1 font-label-md text-label-md active:bg-surface-container-highest transition-transform duration-150 active:scale-90 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">chat_bubble</span>
+            Scripts
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-3 py-1 font-label-md text-label-md active:bg-surface-container-highest transition-transform duration-150 active:scale-90 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">campaign</span>
+            Ads
+        </a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant px-3 py-1 font-label-md text-label-md active:bg-surface-container-highest transition-transform duration-150 active:scale-90 rounded-xl" href="#">
+<span class="material-symbols-outlined mb-1">account_circle</span>
+            Profile
+        </a>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-[80px] pb-[80px] md:pb-lg md:pl-[272px] pr-margin-mobile md:pr-margin-desktop pl-margin-mobile min-h-screen">
+<!-- Header Section -->
+<div class="mb-lg">
+<h2 class="font-display-lg text-display-lg text-primary">System Overview</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-sm">Monitor platform health and recent administrative actions.</p>
+</div>
+<!-- Bento Grid: Key Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-xl">
+<!-- Metric Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm flex flex-col justify-between"><div class="flex items-center justify-between mb-md">
+<span class="font-body-md text-body-md text-on-surface-variant">Total Content Groups</span>
+<div class="h-8 w-8 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-fixed text-sm">folder</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg text-on-surface">12</span>
+<span class="font-label-md text-label-md text-secondary">+1 this month</span>
+</div></div>
+<!-- Metric Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm flex flex-col justify-between"><div class="flex items-center justify-between mb-md">
+<span class="font-body-md text-body-md text-on-surface-variant">Total Scripts</span>
+<div class="h-8 w-8 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container text-sm">description</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg text-on-surface">180</span>
+<span class="font-label-md text-label-md text-secondary">+15 new</span>
+</div></div>
+<!-- Metric Card 3 -->
+<!-- Metric Card 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-md">
+<span class="font-body-md text-body-md text-on-surface-variant">Recent Updates</span>
+<div class="h-8 w-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">update</span>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg text-on-surface">15</span>
+<span class="font-label-md text-label-md text-on-surface-variant">In last 24h</span>
+</div>
+</div>
+</div>
+<!-- Secondary Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- Quick Actions Panel -->
+<div class="lg:col-span-1 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm flex flex-col">
+<div class="border-b border-surface-variant pb-sm mb-md">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Quick Actions</h3>
+</div>
+<div class="flex-1 flex flex-col gap-md justify-center"><button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-button text-button rounded-lg py-3 px-4 w-full flex justify-center items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm">add_to_photos</span>
+                        Add Script to Existing Group
+                    </button>
+<button class="bg-surface-container-lowest hover:bg-surface-container-highest border border-outline text-primary font-button text-button rounded-lg py-3 px-4 w-full flex justify-center items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm">create_new_folder</span>
+                        Create New Group &amp; Add Script
+                    </button>
+<button class="bg-surface-container-lowest hover:bg-surface-container-highest border border-outline text-primary font-button text-button rounded-lg py-3 px-4 w-full flex justify-center items-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-sm">person_add</span>
+                        Add New Admin
+                    </button></div>
+</div>
+<!-- Recent Activity List -->
+<div class="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-lg shadow-sm">
+<div class="border-b border-surface-variant pb-sm mb-md flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Recent Activity</h3>
+<button class="text-primary font-button text-button hover:underline">View All</button>
+</div>
+<ul class="flex flex-col">
+<!-- Activity Item 1 -->
+<li class="flex items-start gap-md py-sm border-b border-surface-variant last:border-0 last:pb-0">
+<div class="mt-1 h-8 w-8 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-fixed text-sm">edit</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">Admin edited Retailer Group 1</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Updated routing rules and commission structure.</p>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">10m ago</span>
+</li>
+<!-- Activity Item 2 -->
+<li class="flex items-start gap-md py-sm border-b border-surface-variant last:border-0 last:pb-0">
+<div class="mt-1 h-8 w-8 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary-container text-sm">check_circle</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">New Ad Template Approved</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">"Summer Promo 2024" is now live for all retailers.</p>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">1h ago</span>
+</li>
+<!-- Activity Item 3 -->
+<li class="flex items-start gap-md py-sm border-b border-surface-variant last:border-0 last:pb-0">
+<div class="mt-1 h-8 w-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">person_add</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">System Admin invited new user</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Sent invitation to j.doe@retailer.com.</p>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">3h ago</span>
+</li>
+<!-- Activity Item 4 -->
+<li class="flex items-start gap-md py-sm border-b border-surface-variant last:border-0 last:pb-0">
+<div class="mt-1 h-8 w-8 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-error-container text-sm">warning</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface">Script validation warning</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">Missing mandatory compliance field in "Intro Script B".</p>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">5h ago</span>
+</li>
+</ul>
+</div>
+</div>
+</main>
+</body></html>
