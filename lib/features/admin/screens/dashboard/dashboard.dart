@@ -63,6 +63,8 @@ class AdminDashboard extends StatelessWidget {
           case 1:
             return _buildScriptsTab(context);
           case 2:
+            return _buildAudiosTab(context);
+          case 3:
             return _buildSettingsTab(context);
           case 0:
           default:
@@ -81,6 +83,10 @@ class AdminDashboard extends StatelessWidget {
             NavigationDestination(
               icon: Icon(Iconsax.document_text),
               label: 'Scripts',
+            ),
+            NavigationDestination(
+              icon: Icon(Iconsax.music_library_2),
+              label: 'Audios',
             ),
             NavigationDestination(
               icon: Icon(Icons.settings_outlined),
@@ -244,6 +250,30 @@ class AdminDashboard extends StatelessWidget {
     );
   }
 
+  Widget _buildAudiosTab(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSizes.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Manage Audio Library',
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: AppSizes.spaceBtwItems),
+          _buildActionCard(
+            context,
+            'Open Audio Management',
+            Icons.library_music_outlined,
+            () => Get.toNamed(AppRoutes.audioManagement),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCallGuideScriptHierarchy(BuildContext context) {
     final grouped = <int, List<CallScriptModel>>{};
     for (final script in controller.callScripts) {
@@ -395,6 +425,22 @@ class AdminDashboard extends StatelessWidget {
               ),
               trailing: TextButton.icon(
                 onPressed: () => Get.toNamed(AppRoutes.settings),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Open'),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSizes.sm),
+          Card(
+            child: ListTile(
+              leading: const CircleAvatar(
+                backgroundColor: Colors.transparent,
+                child: Icon(Icons.library_music_outlined),
+              ),
+              title: const Text('Manage Audio Library'),
+              subtitle: const Text('Add, delete, or edit audio tracks'),
+              trailing: TextButton.icon(
+                onPressed: () => Get.toNamed(AppRoutes.audioManagement),
                 icon: const Icon(Icons.open_in_new),
                 label: const Text('Open'),
               ),

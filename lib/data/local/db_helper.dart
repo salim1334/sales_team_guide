@@ -32,13 +32,17 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // bumped from 1 → 2 to add audio_tracks
       onCreate: _createDB,
+      onUpgrade: _onUpgrade,
+      onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
     );
   }
 
+  // ─── Schema creation (fresh install) ─────────────────────────
+
   Future _createDB(Database db, int version) async {
-    // 1. Users Table
+    // 1. Users
     await db.execute('''
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,7 +53,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // 2. Call Script Groups Table
+    // 2. Call Script Groups
     await db.execute('''
       CREATE TABLE call_script_groups (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -60,7 +64,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // 3. Call Scripts Table
+    // 3. Call Scripts
     await db.execute('''
       CREATE TABLE call_scripts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -72,7 +76,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // 4. Ad Template Groups Table
+    // 4. Ad Template Groups
     await db.execute('''
       CREATE TABLE ad_template_groups (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,7 +86,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // 5. Ad Templates Table
+    // 5. Ad Templates
     await db.execute('''
       CREATE TABLE ad_templates (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -94,7 +98,7 @@ class DatabaseHelper {
       )
     ''');
 
-    // 6. Settings Table
+    // 6. Settings
     await db.execute('''
       CREATE TABLE settings (
         key TEXT PRIMARY KEY,
@@ -102,37 +106,60 @@ class DatabaseHelper {
       )
     ''');
 
-    // Seed Data
+    // 7. Audio Tracks ← new
+    await _createAudioTracksTable(db);
+
     await _seedDatabase(db);
   }
+
+  // ─── Migrations (existing installs) ──────────────────────────
+  // Add an `if (oldVersion < N)` block for every future version bump.
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await _createAudioTracksTable(db);
+    }
+  }
+
+  Future<void> _createAudioTracksTable(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS audio_tracks (
+        id               INTEGER PRIMARY KEY AUTOINCREMENT,
+        title            TEXT    NOT NULL,
+        description      TEXT,
+        category         TEXT    NOT NULL,
+        file_path        TEXT    NOT NULL,
+        duration_seconds INTEGER NOT NULL DEFAULT 0,
+        sort_order       INTEGER NOT NULL DEFAULT 0,
+        created_at       TEXT    NOT NULL
+      )
+    ''');
+  }
+
+  // ─── Seed ─────────────────────────────────────────────────────
 
   Future _seedDatabase(Database db) async {
     for (var user in SeedData.users) {
       await db.insert('users', user.toMap());
     }
-    
     for (var group in SeedData.callScriptGroups) {
       await db.insert('call_script_groups', group.toMap());
     }
-    
     for (var script in SeedData.callScripts) {
       await db.insert('call_scripts', script.toMap());
     }
-    
     for (var group in SeedData.adTemplateGroups) {
       await db.insert('ad_template_groups', group.toMap());
     }
-    
     for (var template in SeedData.adTemplates) {
       await db.insert('ad_templates', template.toMap());
     }
-
-    // Default settings
     await db.insert('settings', {'key': 'themeMode', 'value': 'system'});
     await db.insert('settings', {'key': 'fontScale', 'value': 'medium'});
   }
 
-  // --- Users ---
+  // ─── Users ────────────────────────────────────────────────────
+
   Future<UserModel?> authenticateUser(String email, String password) async {
     final db = await instance.database;
     final maps = await db.query(
@@ -140,12 +167,8 @@ class DatabaseHelper {
       where: 'email = ? AND password = ?',
       whereArgs: [email, password],
     );
-
-    if (maps.isNotEmpty) {
-      return UserModel.fromMap(maps.first);
-    } else {
-      return null;
-    }
+    if (maps.isNotEmpty) return UserModel.fromMap(maps.first);
+    return null;
   }
 
   Future<int> createUser(UserModel user) async {
@@ -153,10 +176,14 @@ class DatabaseHelper {
     return await db.insert('users', user.toMap());
   }
 
-  // --- Call Scripts ---
+  // ─── Call Scripts ─────────────────────────────────────────────
+
   Future<List<CallScriptGroupModel>> getCallScriptGroups() async {
     final db = await instance.database;
-    final result = await db.query('call_script_groups', orderBy: 'sort_order ASC');
+    final result = await db.query(
+      'call_script_groups',
+      orderBy: 'sort_order ASC',
+    );
     return result.map((json) => CallScriptGroupModel.fromMap(json)).toList();
   }
 
@@ -166,11 +193,13 @@ class DatabaseHelper {
     required String icon,
   }) async {
     final db = await instance.database;
-    final nextSortOrder = Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM call_script_groups'),
+    final nextSortOrder =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM call_script_groups',
+          ),
         ) ??
         1;
-
     return db.insert('call_script_groups', {
       'title': title,
       'title_am': titleAm,
@@ -188,11 +217,7 @@ class DatabaseHelper {
     final db = await instance.database;
     return db.update(
       'call_script_groups',
-      {
-        'title': title,
-        'title_am': titleAm,
-        'icon': icon,
-      },
+      {'title': title, 'title_am': titleAm, 'icon': icon},
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -200,11 +225,7 @@ class DatabaseHelper {
 
   Future<int> deleteCallScriptGroup(int id) async {
     final db = await instance.database;
-    return db.delete(
-      'call_script_groups',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return db.delete('call_script_groups', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<CallScriptModel>> getCallScriptsForGroup(int groupId) async {
@@ -224,14 +245,14 @@ class DatabaseHelper {
     required String tag,
   }) async {
     final db = await instance.database;
-    final nextSortOrder = Sqflite.firstIntValue(
+    final nextSortOrder =
+        Sqflite.firstIntValue(
           await db.rawQuery(
             'SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM call_scripts WHERE group_id = ?',
             [groupId],
           ),
         ) ??
         1;
-
     return db.insert('call_scripts', {
       'group_id': groupId,
       'body_am': bodyAm,
@@ -242,7 +263,10 @@ class DatabaseHelper {
 
   Future<List<CallScriptModel>> getAllCallScripts() async {
     final db = await instance.database;
-    final result = await db.query('call_scripts', orderBy: 'group_id ASC, sort_order ASC');
+    final result = await db.query(
+      'call_scripts',
+      orderBy: 'group_id ASC, sort_order ASC',
+    );
     return result.map((json) => CallScriptModel.fromMap(json)).toList();
   }
 
@@ -255,11 +279,7 @@ class DatabaseHelper {
     final db = await instance.database;
     return db.update(
       'call_scripts',
-      {
-        'group_id': groupId,
-        'body_am': bodyAm,
-        'tag': tag,
-      },
+      {'group_id': groupId, 'body_am': bodyAm, 'tag': tag},
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -267,17 +287,17 @@ class DatabaseHelper {
 
   Future<int> deleteCallScript(int id) async {
     final db = await instance.database;
-    return db.delete(
-      'call_scripts',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return db.delete('call_scripts', where: 'id = ?', whereArgs: [id]);
   }
 
-  // --- Ad Templates ---
+  // ─── Ad Templates ─────────────────────────────────────────────
+
   Future<List<AdTemplateGroupModel>> getAdTemplateGroups() async {
     final db = await instance.database;
-    final result = await db.query('ad_template_groups', orderBy: 'sort_order ASC');
+    final result = await db.query(
+      'ad_template_groups',
+      orderBy: 'sort_order ASC',
+    );
     return result.map((json) => AdTemplateGroupModel.fromMap(json)).toList();
   }
 
@@ -286,11 +306,13 @@ class DatabaseHelper {
     required String description,
   }) async {
     final db = await instance.database;
-    final nextSortOrder = Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM ad_template_groups'),
+    final nextSortOrder =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COALESCE(MAX(sort_order), 0) + 1 as next_order FROM ad_template_groups',
+          ),
         ) ??
         1;
-
     return db.insert('ad_template_groups', {
       'name': name,
       'description': description,
@@ -306,10 +328,7 @@ class DatabaseHelper {
     final db = await instance.database;
     return db.update(
       'ad_template_groups',
-      {
-        'name': name,
-        'description': description,
-      },
+      {'name': name, 'description': description},
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -317,11 +336,7 @@ class DatabaseHelper {
 
   Future<int> deleteAdTemplateGroup(int id) async {
     final db = await instance.database;
-    return db.delete(
-      'ad_template_groups',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return db.delete('ad_template_groups', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<List<AdTemplateModel>> getAdTemplatesForGroup(int groupId) async {
@@ -337,7 +352,10 @@ class DatabaseHelper {
 
   Future<List<AdTemplateModel>> getAllAdTemplates() async {
     final db = await instance.database;
-    final result = await db.query('ad_templates', orderBy: 'group_id ASC, day_number ASC');
+    final result = await db.query(
+      'ad_templates',
+      orderBy: 'group_id ASC, day_number ASC',
+    );
     return result.map((json) => AdTemplateModel.fromMap(json)).toList();
   }
 
@@ -364,11 +382,7 @@ class DatabaseHelper {
     final db = await instance.database;
     return db.update(
       'ad_templates',
-      {
-        'group_id': groupId,
-        'day_number': dayNumber,
-        'body_am': bodyAm,
-      },
+      {'group_id': groupId, 'day_number': dayNumber, 'body_am': bodyAm},
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -376,11 +390,7 @@ class DatabaseHelper {
 
   Future<int> deleteAdTemplate(int id) async {
     final db = await instance.database;
-    return db.delete(
-      'ad_templates',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    return db.delete('ad_templates', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> toggleFavoriteAdTemplate(int id, int currentStatus) async {
@@ -393,7 +403,8 @@ class DatabaseHelper {
     );
   }
 
-  // --- Settings ---
+  // ─── Settings ─────────────────────────────────────────────────
+
   Future<String?> getSetting(String key) async {
     final db = await instance.database;
     final maps = await db.query(
@@ -402,15 +413,80 @@ class DatabaseHelper {
       where: 'key = ?',
       whereArgs: [key],
     );
-
-    if (maps.isNotEmpty) {
-      return maps.first['value'] as String;
-    }
+    if (maps.isNotEmpty) return maps.first['value'] as String;
     return null;
   }
 
   Future<void> updateSetting(String key, String value) async {
     final db = await instance.database;
-    await db.insert('settings', {'key': key, 'value': value}, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert('settings', {
+      'key': key,
+      'value': value,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  // ─── Audio Tracks ─────────────────────────────────────────────
+
+  Future<List<Map<String, dynamic>>> getAudioTracks({String? category}) async {
+    final db = await instance.database;
+    if (category != null) {
+      return db.query(
+        'audio_tracks',
+        where: 'category = ?',
+        whereArgs: [category],
+        orderBy: 'sort_order ASC, created_at ASC',
+      );
+    }
+    return db.query('audio_tracks', orderBy: 'sort_order ASC, created_at ASC');
+  }
+
+  Future<int> insertAudioTrack(Map<String, dynamic> track) async {
+    final db = await instance.database;
+    return db.insert(
+      'audio_tracks',
+      track,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<int> updateAudioTrack(int id, Map<String, dynamic> track) async {
+    final db = await instance.database;
+    return db.update('audio_tracks', track, where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<int> deleteAudioTrack(int id) async {
+    final db = await instance.database;
+    return db.delete('audio_tracks', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<bool> isAudioTableEmpty() async {
+    final db = await instance.database;
+    final count = Sqflite.firstIntValue(
+      await db.rawQuery('SELECT COUNT(*) FROM audio_tracks'),
+    );
+    return (count ?? 0) == 0;
+  }
+
+  Future<int> nextAudioSortOrder(String category) async {
+    final db = await instance.database;
+    final result = await db.rawQuery(
+      'SELECT MAX(sort_order) as max_order FROM audio_tracks WHERE category = ?',
+      [category],
+    );
+    final max = result.first['max_order'] as int?;
+    return (max ?? -1) + 1;
+  }
+
+  Future<void> insertAudioTrackBatch(List<Map<String, dynamic>> tracks) async {
+    final db = await instance.database;
+    await db.transaction((txn) async {
+      for (final track in tracks) {
+        await txn.insert(
+          'audio_tracks',
+          track,
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+      }
+    });
   }
 }

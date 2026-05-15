@@ -24,15 +24,13 @@ class NavigationDrawerLayout extends StatelessWidget {
     final currentRoute = Get.currentRoute;
     final scaffoldKey = GlobalKey<ScaffoldState>();
     final selectedIndex = _routeToIndex(currentRoute);
-    
+
     return Scaffold(
       key: scaffoldKey,
       appBar: CustomAppBar(
         title: title,
         leadingIcon: Icons.menu,
-        onLeadingIconPressed: () {
-          scaffoldKey.currentState?.openDrawer();
-        },
+        onLeadingIconPressed: () => scaffoldKey.currentState?.openDrawer(),
         actions: actions,
       ),
       drawer: Drawer(
@@ -51,14 +49,17 @@ class NavigationDrawerLayout extends StatelessWidget {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.security, size: 32, color: isDark ? AppColors.onPrimary : AppColors.primary),
+                    Icon(
+                      Icons.security,
+                      size: 32,
+                      color: isDark ? AppColors.onPrimary : AppColors.primary,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
                         AppTexts.appName,
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -79,6 +80,14 @@ class NavigationDrawerLayout extends StatelessWidget {
               route: AppRoutes.adTemplate,
               currentRoute: currentRoute,
             ),
+            // ── Audio Library ───────────────────────────────────
+            _buildDrawerItem(
+              context,
+              icon: Iconsax.music,
+              title: AppTexts.audioLibrary,
+              route: AppRoutes.audioLibrary,
+              currentRoute: currentRoute,
+            ),
             _buildDrawerItem(
               context,
               icon: Icons.settings_outlined,
@@ -94,9 +103,7 @@ class NavigationDrawerLayout extends StatelessWidget {
         selectedIndex: selectedIndex,
         onDestinationSelected: (index) {
           final route = _indexToRoute(index);
-          if (route != currentRoute) {
-            Get.offAllNamed(route);
-          }
+          if (route != currentRoute) Get.offAllNamed(route);
         },
         destinations: const [
           NavigationDestination(
@@ -108,6 +115,10 @@ class NavigationDrawerLayout extends StatelessWidget {
             label: AppTexts.adTemplates,
           ),
           NavigationDestination(
+            icon: Icon(Iconsax.music),
+            label: AppTexts.audioLibrary,
+          ),
+          NavigationDestination(
             icon: Icon(Icons.settings_outlined),
             label: AppTexts.settings,
           ),
@@ -116,7 +127,13 @@ class NavigationDrawerLayout extends StatelessWidget {
     );
   }
 
-  Widget _buildDrawerItem(BuildContext context, {required IconData icon, required String title, required String route, required String currentRoute}) {
+  Widget _buildDrawerItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String route,
+    required String currentRoute,
+  }) {
     final isSelected = currentRoute == route;
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
@@ -126,19 +143,24 @@ class NavigationDrawerLayout extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? colorScheme.onSecondaryContainer : colorScheme.onSurfaceVariant),
+        leading: Icon(
+          icon,
+          color: isSelected
+              ? colorScheme.onSecondaryContainer
+              : colorScheme.onSurfaceVariant,
+        ),
         title: Text(
           title,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: isSelected ? colorScheme.onSecondaryContainer : colorScheme.onSurfaceVariant,
+            color: isSelected
+                ? colorScheme.onSecondaryContainer
+                : colorScheme.onSurfaceVariant,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
         onTap: () {
-          Get.back(); // close drawer
-          if (!isSelected) {
-            Get.offAllNamed(route);
-          }
+          Get.back();
+          if (!isSelected) Get.offAllNamed(route);
         },
       ),
     );
@@ -148,8 +170,10 @@ class NavigationDrawerLayout extends StatelessWidget {
     switch (route) {
       case AppRoutes.adTemplate:
         return 1;
-      case AppRoutes.settings:
+      case AppRoutes.audioLibrary:
         return 2;
+      case AppRoutes.settings:
+        return 3;
       case AppRoutes.callGuide:
       default:
         return 0;
@@ -161,6 +185,8 @@ class NavigationDrawerLayout extends StatelessWidget {
       case 1:
         return AppRoutes.adTemplate;
       case 2:
+        return AppRoutes.audioLibrary;
+      case 3:
         return AppRoutes.settings;
       case 0:
       default:

@@ -4,13 +4,14 @@ class AppRoutes {
   static const adminLogin = '/admin-login';
   static const adminSignUp = '/admin-signup';
   static const adminDashboard = '/admin-dashboard';
-  static const audioManagement = '/audio-management';
+  static const audioManagement = '/audio-management'; // ← new
 
+  // Sales team pages
   static const settings = '/settings';
   static const callGuide = '/call-guide';
   static const adTemplate = '/ad-templates';
+  static const audioLibrary = '/audio-library'; // ← new
   static const onboarding = '/onboarding';
-  static const audioLibrary = '/audio-library';
 
   static List<String> allAppScreenItems = [
     adminLogin,
@@ -21,6 +22,7 @@ class AppRoutes {
     callGuide,
     adTemplate,
     audioLibrary,
+    onboarding,
   ];
 }
 
